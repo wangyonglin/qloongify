@@ -5,45 +5,44 @@
 QKeywordSpotting::QKeywordSpotting(QObject *parent,const QAudioFormat &format)
     : QObject{parent},feature_dim(80),sample_rate(16000),channel_count(1)
 {
-    sample_rate=format.sampleRate();
-    channel_count=format.channelCount();
-
 
 }
 
 QKeywordSpotting::~QKeywordSpotting()
 {
     if(stream && keywords_spotter){
-       SherpaOnnxDestroyOnlineStream(stream);
-         SherpaOnnxDestroyKeywordSpotter(keywords_spotter);
+        SherpaOnnxDestroyOnlineStream(stream);
+        SherpaOnnxDestroyKeywordSpotter(keywords_spotter);
     }
 }
 
-void QKeywordSpotting::initialize(){
+
+
+void QKeywordSpotting::initialize(const QKeywordConfig &config){
     // Zipformer config
     memset(&zipformer_config, 0x00, sizeof(zipformer_config));
-    zipformer_config.encoder = encoder.toLocal8Bit();
-    zipformer_config.decoder = decoder.toLocal8Bit();
-    zipformer_config.joiner = joiner.toLocal8Bit();
+    zipformer_config.encoder = config.zipformer_encoder.toUtf8();
+    zipformer_config.decoder = config.zipformer_decoder.toUtf8();
+    zipformer_config.joiner = config.zipformer_joiner.toUtf8();
 
     // Online model config
     memset(&online_model_config, 0x00, sizeof(online_model_config));
-    online_model_config.debug = 1;
-    online_model_config.num_threads = 1;
-    online_model_config.provider = "cpu";
-    online_model_config.model_type="zipformer";
-    online_model_config.tokens=tokens.toLocal8Bit();
+    online_model_config.debug = config.online_model_debug;
+    online_model_config.num_threads = config.online_model_threads;
+    online_model_config.provider = config.online_model_provider.toUtf8();
+    online_model_config.model_type=config.online_model_type.toUtf8();
+    online_model_config.tokens=config.online_model_tokens.toUtf8();
     online_model_config.transducer = zipformer_config;
 
     // Keywords-spotter config
     memset(&keywords_spotter_config, 0x00, sizeof(keywords_spotter_config));
-    keywords_spotter_config.max_active_paths = 4;
-    keywords_spotter_config.keywords_threshold = 0.25;
-    keywords_spotter_config.keywords_score = 1.0;
+    keywords_spotter_config.max_active_paths = config.keywords_spotter_max_active_paths;
+    keywords_spotter_config.keywords_threshold = config.keywords_spotter_keywords_threshold;
+    keywords_spotter_config.keywords_score = config.keywords_spotter_keywords_score;
     keywords_spotter_config.model_config = online_model_config;
-    keywords_spotter_config.keywords_file=keywords_file.toLocal8Bit();
-    keywords_spotter_config.feat_config.sample_rate=sample_rate;
-    keywords_spotter_config.feat_config.feature_dim=feature_dim;
+    keywords_spotter_config.keywords_file=config.keywords_spotter_keywords_file.toUtf8();
+    keywords_spotter_config.feat_config.sample_rate=config.keywords_spotter_feat_sample_rate;
+    keywords_spotter_config.feat_config.feature_dim=config.keywords_spotter_feat_feature_dim;
     keywords_spotter= SherpaOnnxCreateKeywordSpotter(&keywords_spotter_config);
     stream=SherpaOnnxCreateKeywordStream(keywords_spotter);
     //stream=SherpaOnnxCreateKeywordStreamWithKeywords(keywords_spotter,"y ǎn y uán @演员");
@@ -51,30 +50,10 @@ void QKeywordSpotting::initialize(){
 void QKeywordSpotting::cleanup(){
 
 }
-void QKeywordSpotting::write(const QByteArray &data)
-{
-    // if(qiodevice){
-    //     qint64 bytesWritten =qiodevice->write(data);
-    //     if (bytesWritten != data.size()) {
-    //         qWarning() << "Not all data was written to output device. Expected:"
-    //                    << data.size() << "Actual:" << bytesWritten;
-    //     }
-    // }
-}
 
 
 
-
-std::vector<float> QKeywordSpotting::convertFloatVector(const QByteArray &byteArray) {
-    std::vector<float> floatVector;
-    if (byteArray.size() % sizeof(float) == 0) {
-        const float *data = reinterpret_cast<const float*>(byteArray.constData());
-        size_t dataSize = byteArray.size() / sizeof(float);
-        floatVector.assign(data, data + dataSize);
-    }
-    return floatVector;
-}
-void QKeywordSpotting::readSpotter(const QByteArray & bytes){
+void QKeywordSpotting::write(const QByteArray & bytes){
     std::vector<float> streamfloat= convertFloatVector(bytes);
     qDebug() << "streamfloat.size:" <<streamfloat.size();
     SherpaOnnxOnlineStreamAcceptWaveform(stream,sample_rate, streamfloat.data(), streamfloat.size());
@@ -88,4 +67,14 @@ void QKeywordSpotting::readSpotter(const QByteArray & bytes){
     }
 
     SherpaOnnxDestroyKeywordResult(r);
+}
+
+std::vector<float> QKeywordSpotting::convertFloatVector(const QByteArray &byteArray) {
+    std::vector<float> floatVector;
+    if (byteArray.size() % sizeof(float) == 0) {
+        const float *data = reinterpret_cast<const float*>(byteArray.constData());
+        size_t dataSize = byteArray.size() / sizeof(float);
+        floatVector.assign(data, data + dataSize);
+    }
+    return floatVector;
 }

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "qsherpaonnx_global.h"
+#include "qkeywordconfig.h"
 #include "sherpa-onnx/c-api/c-api.h"
 #include <QAudioFormat>
 
@@ -12,11 +13,10 @@ class QT5SHERPAONNX_EXPORT QKeywordSpotting : public QObject
 public:
     explicit QKeywordSpotting(QObject *parent = nullptr,const QAudioFormat &format = QAudioFormat());
     ~QKeywordSpotting();
-    void initialize();
+    void initialize(const QKeywordConfig&config);
     void cleanup();
-    void write(const QByteArray &data);
 public slots:
-    void readSpotter(const QByteArray &bytes);
+    void write(const QByteArray &bytes);
 private:
     std::vector<float> convertFloatVector(const QByteArray &byteArray);
 

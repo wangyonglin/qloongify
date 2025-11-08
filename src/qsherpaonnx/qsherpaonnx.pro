@@ -28,16 +28,16 @@ LIBS += -L$$PWD/../../usr/lib \
 
 HEADERS += \
     audiohandler.h \
+    qkeywordconfig.h \
     qkeywordspotting.h \
-    qkeywordspottingcontroller.h \
     qsherpaonnx_global.h \
     qsoundrecorder.h \
     qsoundspeaker.h
 
 SOURCES += \
     audiohandler.cpp \
+    qkeywordconfig.cpp \
     qkeywordspotting.cpp \
-    qkeywordspottingcontroller.cpp \
     qsoundrecorder.cpp \
     qsoundspeaker.cpp
 
