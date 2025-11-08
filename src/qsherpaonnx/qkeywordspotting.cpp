@@ -2,9 +2,12 @@
 #include <QAudioFormat>
 #include <QDebug>
 
-QKeywordSpotting::QKeywordSpotting(QObject *parent)
+QKeywordSpotting::QKeywordSpotting(QObject *parent,const QAudioFormat &format)
     : QObject{parent},feature_dim(80),sample_rate(16000),channel_count(1)
 {
+    sample_rate=format.sampleRate();
+    channel_count=format.channelCount();
+
 
 }
 
@@ -16,23 +19,13 @@ QKeywordSpotting::~QKeywordSpotting()
     }
 }
 
-void QKeywordSpotting::loadZipformer(QString encoder,
-                                        QString decoder,
-                                        QString joiner)
-{
+void QKeywordSpotting::initialize(){
     // Zipformer config
     memset(&zipformer_config, 0x00, sizeof(zipformer_config));
     zipformer_config.encoder = encoder.toLocal8Bit();
     zipformer_config.decoder = decoder.toLocal8Bit();
     zipformer_config.joiner = joiner.toLocal8Bit();
 
-}
-
-void QKeywordSpotting::loadOnlinemodel(int debug,
-                                       int num_threads,
-                                        QString provider,
-                                        QString tokens)
-{
     // Online model config
     memset(&online_model_config, 0x00, sizeof(online_model_config));
     online_model_config.debug = 1;
@@ -41,10 +34,7 @@ void QKeywordSpotting::loadOnlinemodel(int debug,
     online_model_config.model_type="zipformer";
     online_model_config.tokens=tokens.toLocal8Bit();
     online_model_config.transducer = zipformer_config;
-}
 
-void QKeywordSpotting::loadKeywordSpotter(QString keywords_file)
-{
     // Keywords-spotter config
     memset(&keywords_spotter_config, 0x00, sizeof(keywords_spotter_config));
     keywords_spotter_config.max_active_paths = 4;
@@ -56,8 +46,22 @@ void QKeywordSpotting::loadKeywordSpotter(QString keywords_file)
     keywords_spotter_config.feat_config.feature_dim=feature_dim;
     keywords_spotter= SherpaOnnxCreateKeywordSpotter(&keywords_spotter_config);
     stream=SherpaOnnxCreateKeywordStream(keywords_spotter);
-   //stream=SherpaOnnxCreateKeywordStreamWithKeywords(keywords_spotter,"y ǎn y uán @演员");
+    //stream=SherpaOnnxCreateKeywordStreamWithKeywords(keywords_spotter,"y ǎn y uán @演员");
 }
+void QKeywordSpotting::cleanup(){
+
+}
+void QKeywordSpotting::write(const QByteArray &data)
+{
+    // if(qiodevice){
+    //     qint64 bytesWritten =qiodevice->write(data);
+    //     if (bytesWritten != data.size()) {
+    //         qWarning() << "Not all data was written to output device. Expected:"
+    //                    << data.size() << "Actual:" << bytesWritten;
+    //     }
+    // }
+}
+
 
 
 

@@ -7,42 +7,30 @@
 #include <QAudioFormat>
 #include <QAudioDeviceInfo>
 
-class QSoundSpeaker : public QIODevice
+class QSoundSpeaker : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit QSoundSpeaker(QObject *parent = nullptr);
+    explicit QSoundSpeaker(QObject *parent = nullptr,const QAudioFormat &format = QAudioFormat());
     ~QSoundSpeaker();
-
-    bool initialize();
-    void cleanup();
-
-    void start();
+    bool start();
     void stop();
+    void write(const QByteArray &data);
     bool isPlaying() const;
-
-    void setAudioFormat(const QAudioFormat &format);
-    QAudioFormat getAudioFormat() const;
-
-    qint64 readData(char *data, qint64 maxSize) override;
-    qint64 writeData(const char *data, qint64 maxSize) override;
-
 signals:
     void stateChanged(QAudio::State state);
     void errorOccurred(QAudio::Error error);
     void playbackStarted();
     void playbackStopped();
-public slots:
- void slotSpeaker(const QByteArray &data);
 private slots:
     void handleStateChanged(QAudio::State newState);
-
 private:
-    QAudioOutput *qaudiooutput;
-    QAudioFormat qaudioformat;
-    QAudioDeviceInfo qaudiodeviceinfo;
-    bool isInitialized;
+    bool initialize();
+    void cleanup();
+    QAudioOutput *qaudiooutput = nullptr;
+    QIODevice *qiodevice = nullptr;
+    QAudioFormat qaudioformat ;
 };
 
 #endif // QSOUNDSPEAKER_H

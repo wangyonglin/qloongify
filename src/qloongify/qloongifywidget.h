@@ -7,6 +7,7 @@
 
 #include <Qt5SherpaOnnx/QSoundRecorder>
 #include <Qt5SherpaOnnx/QSoundSpeaker>
+#include <Qt5SherpaOnnx/QKeywordSpotting>
 
 class QLoongifyWidget : public QWidget
 {
@@ -16,10 +17,11 @@ public:
     ~QLoongifyWidget();
 private:
 
-    QLabel *qlabel;
-    QVBoxLayout *qvboxlayout;
+    QLabel *qlabel=nullptr;
+    QVBoxLayout *qvboxlayout=nullptr;
     QSoundRecorder *qsoundrecorder=nullptr;
     QSoundSpeaker *qsoundspeaker=nullptr;
+    QKeywordSpotting *qkeywordspotting=nullptr;
 private slots:
 signals:
 };

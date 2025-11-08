@@ -10,11 +10,11 @@ class QT5SHERPAONNX_EXPORT QKeywordSpotting : public QObject
 {
     Q_OBJECT
 public:
-    explicit QKeywordSpotting(QObject *parent = nullptr);
+    explicit QKeywordSpotting(QObject *parent = nullptr,const QAudioFormat &format = QAudioFormat());
     ~QKeywordSpotting();
-    void loadKeywordSpotter(QString keywords_file);
-    void loadOnlinemodel(int debug, int num_threads,QString provider,QString tokens);
-    void loadZipformer(QString encoder,QString decoder,QString joiner);
+    void initialize();
+    void cleanup();
+    void write(const QByteArray &data);
 public slots:
     void readSpotter(const QByteArray &bytes);
 private:
@@ -28,7 +28,6 @@ private:
     SherpaOnnxKeywordSpotterConfig keywords_spotter_config;
     SherpaOnnxKeywordSpotter *keywords_spotter;
     SherpaOnnxOnlineStream *stream;
-
 signals:
     void refresh(const QString & keywrod);
 };
