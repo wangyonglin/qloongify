@@ -19,27 +19,26 @@ QLoongifyWidget::QLoongifyWidget(QWidget *parent)
     qaudioformat.setSampleType(QAudioFormat::SignedInt);   // 样本类型 有符号整数
 
     qsoundrecorder = new QSoundRecorder(this,qaudioformat);
+    //qsoundspeaker = new QSoundSpeaker(this,qaudioformat);
     qkeywordspotting=new QKeywordSpotting(this,qaudioformat);
 
     connect(qsoundrecorder, &QSoundRecorder::readyRead,[&](){
         QByteArray data=qsoundrecorder->readAll();
-        qkeywordspotting->write(data);
+        if(!data.isEmpty()){
+            qkeywordspotting->slotReadSound(data);
+        }
+
+
     });
 
     qsoundrecorder->start();
-    QKeywordConfig config;
-    config.setZipformerEncoder("/com/wangyonglin/qloongify/usr/etc/sherpa-onnx-kws-zipformer-wenetspeech-3.3M-2024-01-01-mobile/encoder-epoch-12-avg-2-chunk-16-left-64.onnx");
-    config.setZipformerDecoder("/com/wangyonglin/qloongify/usr/etc/sherpa-onnx-kws-zipformer-wenetspeech-3.3M-2024-01-01-mobile/decoder-epoch-12-avg-2-chunk-16-left-64.onnx");
-    config.setZipformerJoiner("/com/wangyonglin/qloongify/usr/etc/sherpa-onnx-kws-zipformer-wenetspeech-3.3M-2024-01-01-mobile/joiner-epoch-12-avg-2-chunk-16-left-64.int8.onnx");
-    config.setOnlineModelTokens("/com/wangyonglin/qloongify/usr/etc/sherpa-onnx-kws-zipformer-wenetspeech-3.3M-2024-01-01-mobile/tokens.txt");
-    config.setKeywordsSpotterKeywordsFile("/com/wangyonglin/qloongify/usr/etc/sherpa-onnx-kws-zipformer-wenetspeech-3.3M-2024-01-01-mobile/test_wavs/test_keywords.txt");
-    config.setKeywordsSpotterFeatSampleRate(16000);
-
-    qkeywordspotting->initialize(config);
+   // qsoundspeaker->start();
+    qkeywordspotting->start();
 }
 
 QLoongifyWidget::~QLoongifyWidget()
 {
-    qsoundspeaker->stop();
-    qkeywordspotting->cleanup();
+     //qsoundspeaker->stop();
+    qsoundrecorder->stop();
+     qkeywordspotting->stop();
 }

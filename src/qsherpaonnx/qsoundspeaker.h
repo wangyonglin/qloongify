@@ -6,11 +6,11 @@
 #include <QAudioOutput>
 #include <QAudioFormat>
 #include <QAudioDeviceInfo>
+#include "qsherpaonnx_global.h"
 
-class QSoundSpeaker : public QObject
+class QT_SHERPAONNX_EXPORT QSoundSpeaker : public QObject
 {
     Q_OBJECT
-
 public:
     explicit QSoundSpeaker(QObject *parent = nullptr,const QAudioFormat &format = QAudioFormat());
     ~QSoundSpeaker();

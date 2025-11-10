@@ -1,3 +1,5 @@
+TARGET = qloongify
+TEMPLATE = app
 QT       += core gui opengl widgets multimedia
 
 # In Qt6 to use QOpenglWidget, we need add QT += openglwidgets.
@@ -6,11 +8,11 @@ greaterThan(QT_MAJOR_VERSION, 5){
     QT += openglwidgets
 }
 
-CONFIG += c++11
-TARGET = qloongify
-TEMPLATE = app
-DEFINES += QT5SHERPAONNX_LIBRARY
+DEFINES += QT_SHERPAONNX_LIBRARY
 
+CONFIG += c++17
+QMAKE_CXXFLAGS += -std=c++17 -fPIC
+# QMAKE_CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=1
 
 INCLUDEPATH +=$$PWD/../qsherpaonnx/include
 INCLUDEPATH += $$PWD/../../usr/include
@@ -20,10 +22,14 @@ SOURCES += \
     main.cpp \
     qloongifywidget.cpp
 
-# Default rules for deployment.
-qnx: target.path = /com/wangyonglin/qloongify/tmp/bin
-else: unix:!android: target.path = /com/wangyonglin/qloongify/usr/bin
-!isEmpty(target.path): INSTALLS += target
-
 HEADERS += \
     qloongifywidget.h
+
+
+# Default rules for deployment.
+qnx: target.path = /tmp/bin
+else: unix:!android: target.path = /usr/bin
+!isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    ../../README.md

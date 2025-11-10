@@ -1,43 +1,53 @@
 #
 TARGET = Qt5SherpaOnnx
 TEMPLATE = lib
-QT       += core opengl multimedia
-DEFINES += QT5SHERPAONNX_LIBRARY
+QT += core opengl multimedia
+DEFINES += QT_SHERPAONNX_LIBRARY
 
-# Default rules for deployment.
-qnx: target.path = /com/wangyonglin/qloongify/tmp/lib
-else: unix:!android: target.path = /usr/lib
-!isEmpty(target.path): INSTALLS += target
+# C++ 标准设置
+CONFIG += c++17
+QMAKE_CXXFLAGS += -std=c++17 -fPIC
+# QMAKE_CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=1
 
-message(The root directory is: $$PWD)
 INCLUDEPATH += $$PWD/../../usr/include
-LIBS += -L$$PWD/../../usr/lib \
-        -lsherpa-onnx-c-api \
-        -lsherpa-onnx-core \
-        -lkaldi-native-fbank-core \
-        -lkaldi-decoder-core \
-        -lsherpa-onnx-fst \
-        -lsherpa-onnx-fstfar \
-        -lsherpa-onnx-kaldifst-core \
-        -lssentencepiece_core \
-        -lonnxruntime \
-        -lespeak-ng \
-        -lucd \
-        -lpiper_phonemize \
-        -lcargs
+
+LIBS += -L$$PWD/../../usr/lib
+LIBS += -Wl,--start-group
+LIBS += -lsherpa-onnx-cxx-api
+LIBS += -lsherpa-onnx-core
+LIBS += -lsherpa-onnx-c-api
+LIBS += -lsherpa-onnx-kaldifst-core
+LIBS += -lsherpa-onnx-fst
+LIBS += -lsherpa-onnx-fstfar
+LIBS += -lkaldi-decoder-core
+LIBS += -lkaldi-native-fbank-core
+LIBS += -lcargs
+LIBS += -lcppinyin_core
+LIBS += -lpiper_phonemize
+LIBS += -lespeak-ng
+LIBS += -lssentencepiece_core
+LIBS += -lucd
+LIBS += -lkissfft-float
+LIBS += -lonnxruntime
+LIBS += -lsherpa-onnx-portaudio_static
+LIBS += -lstdc++ -lm -lpthread -ldl
+LIBS += -Wl,--end-group
 
 HEADERS += \
-    audiohandler.h \
-    qkeywordconfig.h \
     qkeywordspotting.h \
+    qkwstokens.h \
+    qsherpabuilder.h \
     qsherpaonnx_global.h \
     qsoundrecorder.h \
     qsoundspeaker.h
 
 SOURCES += \
-    audiohandler.cpp \
-    qkeywordconfig.cpp \
     qkeywordspotting.cpp \
+    qsherpabuilder.cpp \
     qsoundrecorder.cpp \
     qsoundspeaker.cpp
 
+# Default rules for deployment.
+qnx: target.path = /tmp/lib
+else: unix:!android: target.path = /usr/lib
+!isEmpty(target.path): INSTALLS += target

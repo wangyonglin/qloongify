@@ -11,7 +11,7 @@
 
 
 // 主录音器类:
-class QT5SHERPAONNX_EXPORT QSoundRecorder : public QObject
+class QT_SHERPAONNX_EXPORT QSoundRecorder : public QObject
 {
     Q_OBJECT
 
