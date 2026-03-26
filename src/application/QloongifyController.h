@@ -1,16 +1,19 @@
-#ifndef QMAILLOADER_H
-#define QMAILLOADER_H
+#ifndef QLOONGIFYCONTROLLER_H
+#define QLOONGIFYCONTROLLER_H
 
 #include <QWidget>
 #include <Qt5FFmpegPlayer>
-
-class QMailloader : public QWidget
+#include <Qt5AliIOT/AliIOTConnect>
+#include <Qt5AliIOT/AliIOTClient>
+class QloongifyController : public QWidget
 {
     Q_OBJECT
 public:
-    explicit QMailloader(QWidget *parent = nullptr);
+    explicit QloongifyController(QWidget *parent = nullptr);
 private:
-    Qt5FFmpegPlayer * ffmpeg;
+  //  Qt5FFmpegPlayer * ffmpeg;
+    AliIOTClient *client;
+    AliIOTConnect *m_aliiot_connect=nullptr;
 signals:
 
     // QWidget interface
@@ -19,4 +22,4 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 };
 
-#endif // QMAILLOADER_H
+#endif // QLOONGIFYCONTROLLER_H

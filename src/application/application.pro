@@ -19,12 +19,14 @@ QMAKE_CXXFLAGS += -std=c++17 -fPIC
 # DEFINES += QT_NO_DEBUG_OUTPUT
 # QMAKE_CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=1
 
+INCLUDEPATH += /home/wangyonglin/github/qloongify/usr/include
+LIBS += -L/home/wangyonglin/github/qloongify/usr/lib  -laiot
 
-
+INCLUDEPATH +=$$PWD/../Qt5AliIOT/include
 INCLUDEPATH +=$$PWD/../Qt5FFmpeg/include
-LIBS +=-L$$OUT_PWD/../Qt5FFmpeg -lQt5FFmpeg -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lswresample -lswscale
-
-
+LIBS += -L$$OUT_PWD/../Qt5FFmpeg -lQt5FFmpeg -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lswresample -lswscale
+LIBS += -L$$OUT_PWD/../usr/lib
+LIBS += -L$$OUT_PWD/../Qt5AliIOT -lQt5AliIOT
 # OpenGL 配置
 LIBS += -lGLESv2
 
@@ -48,8 +50,13 @@ else: unix:!android: target.path = /usr/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    QMailloader.h
+    QloongifyController.h \
+    QloongifyObject.h
 
 SOURCES += \
-    QMailloader.cpp \
+    QloongifyController.cpp \
+    QloongifyObject.cpp \
     main.cpp
+
+DISTFILES += \
+    ../../conf/qloongify.conf

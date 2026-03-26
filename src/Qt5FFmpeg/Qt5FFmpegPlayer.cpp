@@ -6,6 +6,7 @@
 Qt5FFmpegPlayer::Qt5FFmpegPlayer(QWidget *parent)
     : Qt5FFmpegRender{parent}
 {
+    av_log_set_level(AV_LOG_ERROR);
     // 创建专门的工作对象来处理数据
     m_qt5_ffmpeg_sync=new Qt5FFmpegSync(this);
     m_controller = new Qt5FFmpegController(this);
